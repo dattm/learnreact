@@ -5,9 +5,9 @@ import Person from './Person/Person';
 class App extends Component {
     state = {
         person : [
-            {name: "Max", age : 28},
-            {name: "Bill", age : 29},
-            {name: "Jane", age : 30}
+            {id : 1, name: "Max", age : 28},
+            {id : 2, name: "Bill", age : 29},
+            {id : 3, name: "Jane", age : 30}
         ],
         otherState : "some other value",
         showPersons: false
@@ -25,13 +25,32 @@ class App extends Component {
 
     };
 
-    nameChangeHandler = (event) => {
+    deletePersonHandler = (personIndex) => {
+        const personChange = [...this.state.person];
+        personChange.splice(personIndex, 1);
+        this.setState({person : personChange});
+    };
+
+    nameChangeHandler = (event, id) => {
+        const personIndex = this.state.persons.findIndex(p => {
+            return p.id === id;
+        });
+
+        const persons = {
+            ...this.state.persons[personIndex]
+        };
+
+        persons.name = event.target.value;
+
+        const person = [...this.state.persons];
+
+        persons[personIndex] = person;
+
+        //const person = Object.assign({}, this.state.person[personIndex]);
+
+
         this.setState({
-            person : [
-                {name: "Leon" , age : 28},
-                {name: event.target.value, age : 29},
-                {name: "Jill", age : 30}
-            ]
+            persons : persons
         });
     };
 
@@ -53,8 +72,14 @@ class App extends Component {
      if (this.state.showPersons) {
          person = (
              <div>
-                 {this.state.person.map(p => {
-                    return <Person name={p.name} age={p.age} />
+                 {this.state.person.map((p, index) => {
+                    return <Person
+                        click={() => this.deletePersonHandler(index)}
+                        name={p.name}
+                        age={p.age}
+                        key={p.id}
+                        change={(event) => this.nameChangeHandler(event, p.id)}
+                    />
                  })}
              </div>
          );
